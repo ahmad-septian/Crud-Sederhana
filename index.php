@@ -59,6 +59,30 @@
             unset($_SESSION['delete']);
         }
         ?>
+        <?php
+        include 'koneksi.php';
+
+        $jumlah_data_per_halaman = 5;
+
+        // Hitung total jumlah data
+        $query = mysqli_query($con, "SELECT COUNT(*) as total FROM tbl_mahasiswa");
+        $row = mysqli_fetch_assoc($query);
+        $total_data = $row['total'];
+
+        // Hitung total jumlah halaman
+        $total_halaman = ceil($total_data / $jumlah_data_per_halaman);
+
+        // Tentukan halaman saat ini
+        $halaman_sekarang = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+
+        // Hitung batas data yang akan ditampilkan pada halaman saat ini
+        $data_mulai = ($halaman_sekarang - 1) * $jumlah_data_per_halaman;
+
+        // Ambil data sesuai dengan batas yang telah ditentukan
+        $data = mysqli_query($con, "SELECT * FROM tbl_mahasiswa LIMIT $data_mulai, $jumlah_data_per_halaman");
+
+        ?>
+
         <table class="table">
             <thead>
                 <tr>
@@ -70,9 +94,7 @@
             </thead>
             <tbody>
                 <?php
-                include 'koneksi.php';
-                $no = 1;
-                $data = mysqli_query($con, "SELECT * FROM tbl_mahasiswa");
+                $no = $data_mulai + 1;
                 while ($d = mysqli_fetch_array($data)) {
                 ?>
                     <tr>
@@ -87,6 +109,24 @@
                 <?php } ?>
             </tbody>
         </table>
+
+        <div style="display: flex; justify-content: flex-end;">
+            <nav aria-label="Page navigation example">
+                <ul class="pagination">
+                    <?php if ($halaman_sekarang > 1) { ?>
+                        <li class="page-item"><a class="page-link" href="?page=<?php echo $halaman_sekarang - 1; ?>">Previous</a></li>
+                    <?php } ?>
+                    <?php
+                    for ($i = 1; $i <= $total_halaman; $i++) {
+                        echo '<li class="page-item ' . ($i == $halaman_sekarang ? 'active' : '') . '"><a class="page-link" href="?page=' . $i . '">' . $i . '</a></li>';
+                    }
+                    ?>
+                    <?php if ($halaman_sekarang < $total_halaman) { ?>
+                        <li class="page-item"><a class="page-link" href="?page=<?php echo $halaman_sekarang + 1; ?>">Next</a></li>
+                    <?php } ?>
+                </ul>
+            </nav>
+        </div>
     </div>
 
     <!-- Modal Tambah -->
