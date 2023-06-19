@@ -110,7 +110,10 @@
             </tbody>
         </table>
 
-        <div style="display: flex; justify-content: flex-end;">
+        <div style="display: flex; justify-content: space-between;">
+            <div>
+                Total Data: <?php echo $total_data; ?>
+            </div>
             <nav aria-label="Page navigation example">
                 <ul class="pagination">
                     <?php if ($halaman_sekarang > 1) { ?>
